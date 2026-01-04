@@ -9,34 +9,9 @@ import BeyondEnums
 import XCTest
 
 final class BeyondEnumsTests: XCTestCase {
-    
-    public struct LocalFeedImage: Equatable {
-        public let id: UUID
-        public let description: String?
-        public let location: String?
-        public let url: URL
-        
-        public init(id: UUID, description: String?, location: String?, url: URL) {
-            self.id = id
-            self.description = description
-            self.location = location
-            self.url = url
-        }
-    }
-    
-    public typealias CacheFeed = (feed: [LocalFeedImage], timestamp: Date)
-    typealias RetrievalResult = Swift.Result<CacheFeed?, Error>
-    typealias RetrievalCompletion = (RetrievalResult) -> Void
 
     func testExample() throws {
-        let expectedResult: ResultImageURL = .success(.none)
-//        let expectedResult: CompletionImageURL = { _ in .success(.none) }
-//        fetchFeed() { receivedResult in
-//            
-//        }
-    }
-    
-    func expect(/*_ sut: FeedStore,*/ toRetrieve expectedResult: RetrievalResult, file: StaticString = #file, line: UInt = #line) {
+        let expectedResult: ResultImageURL = .success(aFeed)
         let exp = expectation(description: "Wait for cache retrieval")
         
         fetchFeed { retrievedResult in
@@ -46,17 +21,24 @@ final class BeyondEnumsTests: XCTestCase {
                 break
                 
             case let (.success(.some(expected)), .success(.some(retrieved))):
-              //  XCTAssertEqual(retrieved.feed, expected.feed, file: file, line: line)
-             //   XCTAssertEqual(retrieved.timestamp, expected.timestamp, file: file, line: line)
+                XCTAssertEqual(retrieved.feeds, expected.feeds)
+                XCTAssertEqual(retrieved.timestamp, expected.timestamp)
                 
             default:
-                XCTFail("Expected to retrieve \(expectedResult), got \(retrievedResult) instead", file: file, line: line)
+                XCTFail("Expected to retrieve \(expectedResult), got \(retrievedResult) instead")
             }
-            
             exp.fulfill()
         }
         
         wait(for: [exp], timeout: 1.0)
     }
-
+    
+    // MARK :- Helpers
+    var aFeed: FeedImageURL {
+        FeedImageURL(feeds: [anyURL], timestamp: Date())
+    }
+    
+    var anyURL: ImageURL {
+        ImageURL("https://sample.url.org")
+    }
 }

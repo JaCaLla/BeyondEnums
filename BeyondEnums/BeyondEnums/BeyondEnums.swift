@@ -7,13 +7,22 @@
 
 import Foundation
 
-public struct ImageURL: Codable {
+public struct ImageURL: Codable, Equatable {
     let url: String
+    
+    public init(_ url: String) {
+        self.url = url
+    }
 }
 
-public struct FeedImageURL: Codable {
-    let feeds: [ImageURL]
-    let timestamp: String
+public struct FeedImageURL: Codable, Equatable {
+    public let feeds: [ImageURL]
+    public let timestamp: Date
+    
+    public init(feeds: [ImageURL], timestamp: Date) {
+        self.feeds = feeds
+        self.timestamp = timestamp
+    }
 }
 
 public typealias ResultImageURL = Result<FeedImageURL?, Error>
